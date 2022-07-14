@@ -8,13 +8,22 @@ app.use(express.json());
 app.use(cors());
 
 const users = [];
+function uuidValidation(id){
+  const hifensId = id.split("-")
 
+  if(id.length===36 && hifensId.length===5){
+    return true
+  }else{
+    return false
+  }
+  
+}
 function checksExistsUserAccount(request, response, next) {
   const {username} = request.headers
   const user = users.find(user => user.username === username)
 
   if(!user){
-    return response.status(404).send()
+    return response.status(404).json({error: "User not found"})
   }
   
   request.user = user
@@ -31,7 +40,27 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
+  const {username} = request.headers
+  const {id:idTodo} = request.params
+
+  const userExist = users.find(user => user.username === username)
+  if(!userExist){
+    return response.status(404).json({error: "User not found"})
+  }
+  const isUuid = uuidValidation(idTodo)
+  if(isUuid===false){
+    return response.status(400).json({error: "it is not a valid id"})
+  }
   
+  const todoExist = userExist.todos.find(todo => todo.id === idTodo)
+  if(!todoExist){
+    return response.status(404).json({error: "todo not exist"})
+  }
+  if(userExist && todoExist && isUuid){
+    request.user = userExist
+    request.todo = todoExist
+    return next()
+  }
 }
 
 function findUserById(request, response, next) {
