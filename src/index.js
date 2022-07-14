@@ -16,7 +16,7 @@ function uuidValidation(id){
   }else{
     return false
   }
-  
+
 }
 function checksExistsUserAccount(request, response, next) {
   const {username} = request.headers
@@ -64,7 +64,15 @@ function checksTodoExists(request, response, next) {
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const {id:idUser} = request.params
+  const userExist = users.find(user => user.id === idUser)
+  if(userExist){
+    response.user = userExist
+    return next()
+  }else{
+    return response.status(404).json({error: "User not exist"})
+  }
+
 }
 
 app.post('/users', (request, response) => {
