@@ -67,7 +67,7 @@ function findUserById(request, response, next) {
   const {id:idUser} = request.params
   const userExist = users.find(user => user.id === idUser)
   if(userExist){
-    response.user = userExist
+    request.user = userExist
     return next()
   }else{
     return response.status(404).json({error: "User not exist"})
