@@ -23,11 +23,15 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  
+  const { user } = request
+  if((user.pro===false && user.todos.length<=9) || user.pro===true){
+    return next()
+  }
+  return response.status(403).json({error: "user has already reached the free usage limit!"})
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  
 }
 
 function findUserById(request, response, next) {
